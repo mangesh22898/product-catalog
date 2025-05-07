@@ -1,0 +1,36 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: product-catalog-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway  # Matches istio-ingressgateway service
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "product-catalog.local"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: product-catalog-vs
+  namespace: default
+spec:
+  hosts:
+  - "product-catalog.local"
+  gateways:
+  - product-catalog-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: product-catalog
+        port:
+          number: 80
+
